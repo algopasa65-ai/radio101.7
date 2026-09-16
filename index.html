@@ -13,9 +13,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
 
-<!-- SDK oficial de embeds de Twitch (permite controlar el player en modo solo-audio) -->
-<script src="https://player.twitch.tv/js/embed/v1.js"></script>
-
 <style>
   :root{
     --bg:#0a0a1a;
@@ -233,6 +230,12 @@
     width:300px;
     height:169px;
     pointer-events:none;
+  }
+
+  .twitch-oculto iframe{
+    width:100%;
+    height:100%;
+    border:0;
   }
 
   .audio-player{
@@ -553,13 +556,20 @@
       <p id="estadoPlayer" class="estado-player">Tocá play para escuchar</p>
 
       <div class="audio-controls">
-        <button id="btnMute" class="btn-mute" type="button" aria-label="Silenciar">🔊</button>
-        <input type="range" id="volumeSlider" min="0" max="100" value="80" aria-label="Volumen">
+        <button id="btnMute" class="btn-mute" type="button" aria-label="Silenciar">🔊 Silenciar</button>
       </div>
     </div>
 
-    <!-- Contenedor oculto: acá vive el player de Twitch, sin mostrarse -->
-    <div id="twitch-audio-target" class="twitch-oculto"></div>
+    <!-- Acá vive el player de Twitch, oculto de la vista: solo se escucha -->
+    <div class="twitch-oculto">
+      <iframe
+        id="twitchAudioFrame"
+        title="Audio en vivo de Algo Pasa"
+        allow="autoplay"
+        frameborder="0"
+        scrolling="no">
+      </iframe>
+    </div>
 
     <p class="player-hint">¿No se escucha? Abrí en <a href="https://www.twitch.tv/algopasa" target="_blank" rel="noopener">Twitch</a></p>
   </div>
@@ -631,57 +641,39 @@
 </a>
 
 <script>
-  // ===== REPRODUCTOR DE SOLO AUDIO (usa Twitch, pero oculto: no se ve video) =====
-  let twitchPlayer = null;
+  // ===== REPRODUCTOR DE SOLO AUDIO =====
+  // Truco: el iframe de Twitch existe siempre en la página, pero sin "src".
+  // Recién le ponemos el src (con autoplay y sonido) cuando el usuario toca Play,
+  // lo cual cuenta como una acción del usuario y evita que el navegador bloquee el audio.
+  // Para pausar, simplemente le sacamos el src: eso corta el audio al instante.
+
   let reproduciendo = false;
-  let volumenPrevio = 0.8;
+  let muteado = false;
+
+  const CHANNEL = 'algopasa';
+  const PARENT = 'algopasa65-ai.github.io';
+
+  function urlDelPlayer(muted){
+    return `https://player.twitch.tv/?channel=${CHANNEL}&parent=${PARENT}&autoplay=true&muted=${muted}`;
+  }
 
   const btnPlay = document.getElementById('btnPlay');
   const iconoPlay = document.getElementById('iconoPlay');
   const audioEq = document.getElementById('audioEq');
   const estadoPlayer = document.getElementById('estadoPlayer');
   const btnMute = document.getElementById('btnMute');
-  const volumeSlider = document.getElementById('volumeSlider');
-
-  function crearPlayerTwitch(){
-    if (twitchPlayer || !window.Twitch) return;
-    twitchPlayer = new Twitch.Player('twitch-audio-target', {
-      channel: 'algopasa',
-      parent: ['algopasa65-ai.github.io'],
-      width: '100%',
-      height: '100%',
-      autoplay: true,
-      muted: false
-    });
-
-    // Recién tocamos volumen/mute cuando el player avisa que está listo,
-    // porque llamar a estos métodos antes puede no tener efecto.
-    twitchPlayer.addEventListener(Twitch.Player.READY, () => {
-      twitchPlayer.setMuted(false);
-      twitchPlayer.setVolume(volumeSlider.value / 100);
-      twitchPlayer.play();
-    });
-
-    twitchPlayer.addEventListener(Twitch.Player.ONLINE, () => {
-      estadoPlayer.textContent = 'En vivo ahora 🔴';
-    });
-    twitchPlayer.addEventListener(Twitch.Player.OFFLINE, () => {
-      estadoPlayer.textContent = 'La radio no está transmitiendo en este momento';
-    });
-  }
+  const frame = document.getElementById('twitchAudioFrame');
 
   btnPlay.addEventListener('click', () => {
-    if (!twitchPlayer) crearPlayerTwitch();
-
     if (!reproduciendo) {
-      twitchPlayer.play();
+      frame.src = urlDelPlayer(muteado);
       reproduciendo = true;
       iconoPlay.textContent = '❚❚';
       btnPlay.classList.add('reproduciendo');
       audioEq.classList.add('activo');
       estadoPlayer.textContent = 'Sonando ahora 🎶';
     } else {
-      twitchPlayer.pause();
+      frame.src = ''; // corta el audio
       reproduciendo = false;
       iconoPlay.textContent = '▶';
       btnPlay.classList.remove('reproduciendo');
@@ -691,20 +683,10 @@
   });
 
   btnMute.addEventListener('click', () => {
-    if (!twitchPlayer) return;
-    const estaMuteado = twitchPlayer.getMuted();
-    twitchPlayer.setMuted(!estaMuteado);
-    btnMute.textContent = estaMuteado ? '🔊' : '🔇';
-  });
-
-  volumeSlider.addEventListener('input', () => {
-    volumenPrevio = volumeSlider.value / 100;
-    if (twitchPlayer) {
-      twitchPlayer.setVolume(volumenPrevio);
-      if (volumenPrevio > 0 && twitchPlayer.getMuted()) {
-        twitchPlayer.setMuted(false);
-        btnMute.textContent = '🔊';
-      }
+    muteado = !muteado;
+    btnMute.textContent = muteado ? '🔇 Activar sonido' : '🔊 Silenciar';
+    if (reproduciendo) {
+      frame.src = urlDelPlayer(muteado); // recarga con el nuevo estado de mute
     }
   });
 
