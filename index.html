@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algo Pasa 101.7 MHz · La Lealtad en el Aire</title>
+<meta name="description" content="Algo Pasa 101.7 MHz - La Lealtad en el Aire. Escuchá en vivo, noticias y contacto.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- GSAP + ScrollTrigger (CDN) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<style>
+  :root{
+    --bg:#0a0a1a;
+    --morado:#6c5ce7;
+    --rojo:#e94560;
+    --dorado:#ffd700;
+    --card-bg:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.1);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--bg);
+    color:#fff;
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  .bg-animado{
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(108,92,231,0.35), transparent 45%),
+      radial-gradient(circle at 80% 30%, rgba(233,69,96,0.30), transparent 45%),
+      radial-gradient(circle at 50% 80%, rgba(255,215,0,0.15), transparent 50%),
+      var(--bg);
+    background-size:200% 200%;
+    animation:moverFondo 18s ease-in-out infinite;
+  }
+
+  @keyframes moverFondo{
+    0%{background-position:0% 0%, 100% 0%, 50% 100%;}
+    50%{background-position:100% 50%, 0% 60%, 30% 40%;}
+    100%{background-position:0% 0%, 100% 0%, 50% 100%;}
+  }
+
+  .contenedor{
+    max-width:600px;
+    margin:0 auto;
+    padding:32px 20px 120px;
+  }
+
+  .hero{
+    text-align:center;
+    padding:32px 0 24px;
+  }
+
+  .hero-emoji{
+    font-size:64px;
+    display:inline-block;
+    animation:flotar 3s ease-in-out infinite;
+  }
+
+  @keyframes flotar{
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-12px) rotate(-4deg);}
+  }
+
+  .hero-titulo{
+    font-size:clamp(40px, 12vw, 64px);
+    font-weight:900;
+    letter-spacing:-1px;
+    margin:16px 0 12px;
+    background:linear-gradient(90deg, var(--morado), var(--rojo), var(--dorado));
+    background-size:200% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:brillo 4s linear infinite;
+  }
+
+  @keyframes brillo{
+    0%{background-position:0% center;}
+    100%{background-position:200% center;}
+  }
+
+  .badge-frecuencia{
+    display:inline-block;
+    background:rgba(108,92,231,0.18);
+    border:1px solid rgba(108,92,231,0.5);
+    color:#c9c3ff;
+    padding:8px 18px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:15px;
+    margin-bottom:16px;
+  }
+
+  .slogan{
+    font-size:18px;
+    font-weight:500;
+    color:#e8e6ff;
+    margin-bottom:20px;
+    font-style:italic;
+  }
+
+  .badge-vivo{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(233,69,96,0.15);
+    border:1px solid rgba(233,69,96,0.6);
+    padding:8px 16px;
+    border-radius:999px;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.5px;
+    color:#ff9db2;
+  }
+
+  .punto-vivo{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:var(--rojo);
+    animation:pulso 1.4s ease-in-out infinite;
+  }
+
+  @keyframes pulso{
+    0%{box-shadow:0 0 0 0 rgba(233,69,96,0.6);}
+    70%{box-shadow:0 0 0 10px rgba(233,69,96,0);}
+    100%{box-shadow:0 0 0 0 rgba(233,69,96,0);}
+  }
+
+  .ecualizador{
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    gap:5px;
+    height:60px;
+    margin:28px 0 8px;
+  }
+
+  .barra{
+    width:6px;
+    border-radius:4px;
+    background:linear-gradient(180deg, var(--dorado), var(--rojo), var(--morado));
+    animation:saltar 1.2s ease-in-out infinite;
+  }
+
+  .barra:nth-child(1){height:20%;animation-delay:-1.1s;}
+  .barra:nth-child(2){height:60%;animation-delay:-0.9s;}
+  .barra:nth-child(3){height:35%;animation-delay:-1.3s;}
+  .barra:nth-child(4){height:90%;animation-delay:-0.4s;}
+  .barra:nth-child(5){height:55%;animation-delay:-0.7s;}
+  .barra:nth-child(6){height:80%;animation-delay:-0.2s;}
+  .barra:nth-child(7){height:40%;animation-delay:-1.5s;}
+  .barra:nth-child(8){height:65%;animation-delay:-0.6s;}
+  .barra:nth-child(9){height:25%;animation-delay:-1s;}
+
+  @keyframes saltar{
+    0%,100%{transform:scaleY(0.4);}
+    50%{transform:scaleY(1);}
+  }
+
+  .tarjeta{
+    background:var(--card-bg);
+    border:1px solid var(--card-border);
+    border-radius:20px;
+    padding:22px;
+    margin-top:28px;
+    backdrop-filter:blur(6px);
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  }
+
+  .tarjeta-titulo{
+    font-size:19px;
+    font-weight:700;
+    margin-bottom:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .player-wrap{
+    position:relative;
+    width:100%;
+    padding-top:56.25%;
+    border-radius:14px;
+    overflow:hidden;
+    background:#000;
+  }
+
+  .player-wrap iframe{
+    position:absolute;
+    top:0;left:0;
+    width:100%;
+    height:100%;
+    border:0;
+  }
+
+  .player-hint{
+    margin-top:12px;
+    font-size:13px;
+    color:#a9a6c9;
+    text-align:center;
+  }
+
+  .player-hint a{
+    color:var(--dorado);
+    text-decoration:none;
+    font-weight:600;
+  }
+
+  /* ===== SECCIONES PARALLAX CON IMÁGENES QUE SE EXPANDEN ===== */
+  .parallax-seccion{
+    position:relative;
+    width:100vw;
+    margin-left:calc(-50vw + 50%);
+    height:70vh;
+    min-height:420px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    margin-top:60px;
+  }
+
+  .parallax-img-wrap{
+    position:absolute;
+    inset:0;
+    width:80%;
+    height:70%;
+    margin:auto;
+    border-radius:28px;
+    overflow:hidden;
+    will-change:transform, border-radius;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5);
+  }
+
+  .parallax-img-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    transform:scale(1.15);
+  }
+
+  .parallax-overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(10,10,26,0) 40%, rgba(10,10,26,0.85) 100%);
+    display:flex;
+    align-items:flex-end;
+    padding:28px;
+  }
+
+  .parallax-texto{
+    font-size:15px;
+    font-weight:600;
+    color:#f1f0ff;
+    max-width:420px;
+    line-height:1.5;
+  }
+
+  .parallax-texto span{
+    display:block;
+    font-size:12px;
+    letter-spacing:0.5px;
+    color:var(--dorado);
+    margin-bottom:6px;
+    font-weight:700;
+  }
+
+  .sociales{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    margin-top:28px;
+  }
+
+  .btn-social{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:18px;
+    border-radius:20px;
+    text-decoration:none;
+    font-weight:700;
+    font-size:16px;
+    color:#fff;
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-social:active{transform:scale(0.97);}
+
+  .btn-social:hover{
+    transform:translateY(-3px);
+    box-shadow:0 12px 26px rgba(0,0,0,0.45);
+  }
+
+  .btn-facebook{background:linear-gradient(135deg,#3b5998,#6c5ce7);}
+  .btn-noticias{background:linear-gradient(135deg,var(--dorado),var(--rojo));color:#1a0d0d;}
+  .btn-whatsapp{background:linear-gradient(135deg,#25D366,#128C7E);}
+
+  .btn-social .emoji{font-size:22px;}
+
+  .noticias-texto{
+    color:#cfcdea;
+    font-size:14px;
+    line-height:1.6;
+    margin-bottom:16px;
+  }
+
+  .link-noticias{
+    display:inline-block;
+    padding:12px 20px;
+    border-radius:14px;
+    background:linear-gradient(135deg, var(--morado), var(--rojo));
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    font-size:14px;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:40px;
+    padding-top:24px;
+    border-top:1px solid var(--card-border);
+    color:#9c99c0;
+    font-size:13px;
+    line-height:1.8;
+  }
+
+  footer strong{color:#e8e6ff;}
+
+  .flotante-whatsapp{
+    position:fixed;
+    bottom:22px;
+    right:22px;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#25D366,#128C7E);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:28px;
+    text-decoration:none;
+    box-shadow:0 8px 24px rgba(37,211,102,0.5);
+    animation:flotarBoton 2.6s ease-in-out infinite;
+    z-index:50;
+  }
+
+  @keyframes flotarBoton{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-8px);}
+  }
+
+  .flotante-whatsapp::after{
+    content:"Publicitá tu negocio 📢";
+    position:absolute;
+    right:72px;
+    white-space:nowrap;
+    background:#111;
+    color:#fff;
+    padding:8px 12px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:600;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.2s ease;
+  }
+
+  .flotante-whatsapp:hover::after{opacity:1;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+
+  @media (max-width:400px){
+    .hero-titulo{font-size:38px;}
+    .btn-social{font-size:14px;padding:16px;}
+    .parallax-seccion{height:55vh; min-height:340px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-animado"></div>
+
+<div class="contenedor">
+
+  <!-- HERO -->
+  <section class="hero">
+    <span class="hero-emoji">📻</span>
+    <h1 class="hero-titulo">ALGO PASA</h1>
+    <div class="badge-frecuencia">📡 101.7 MHz</div>
+    <p class="slogan">✨ "La Lealtad en el Aire" ✨</p>
+    <div class="badge-vivo">
+      <span class="punto-vivo"></span>
+      EN VIVO
+    </div>
+  </section>
+
+  <!-- ECUALIZADOR -->
+  <div class="ecualizador" aria-hidden="true">
+    <div class="barra"></div>
+    <div class="barra"></div>
+    <div class="barra"></div>
+    <div class="barra"></div>
+    <div class="barra"></div>
+    <div class="barra"></div>
+    <div class="barra"></div>
+    <div class="barra"></div>
+    <div class="barra"></div>
+  </div>
+
+  <!-- PLAYER TWITCH -->
+  <div class="tarjeta">
+    <div class="tarjeta-titulo">🎧 Escuchá en Vivo</div>
+    <div class="player-wrap">
+      <iframe
+        src="https://player.twitch.tv/?channel=algopasa&parent=usuario.github.io"
+        allowfullscreen
+        title="Reproductor en vivo de Algo Pasa">
+      </iframe>
+    </div>
+    <p class="player-hint">¿No se reproduce? Abrí en <a href="https://www.twitch.tv/algopasa" target="_blank" rel="noopener">Twitch</a></p>
+  </div>
+
+</div>
+
+<!-- ===== SECCIONES PARALLAX (a ancho completo) ===== -->
+
+<section class="parallax-seccion">
+  <div class="parallax-img-wrap">
+    <img src="https://picsum.photos/seed/algopasa-estudio/1400/1000" alt="Estudio de radio Algo Pasa" loading="lazy">
+    <div class="parallax-overlay">
+      <p class="parallax-texto"><span>NUESTRO ESTUDIO</span>Al aire todos los días, contando lo que le importa a la comunidad.</p>
+    </div>
+  </div>
+</section>
+
+<section class="parallax-seccion">
+  <div class="parallax-img-wrap">
+    <img src="https://picsum.photos/seed/algopasa-microfono/1400/1000" alt="Micrófono en vivo" loading="lazy">
+    <div class="parallax-overlay">
+      <p class="parallax-texto"><span>101.7 MHz</span>La frecuencia que acompaña tu día, con música y voces que conocés.</p>
+    </div>
+  </div>
+</section>
+
+<section class="parallax-seccion">
+  <div class="parallax-img-wrap">
+    <img src="https://picsum.photos/seed/algopasa-comunidad/1400/1000" alt="Comunidad de oyentes" loading="lazy">
+    <div class="parallax-overlay">
+      <p class="parallax-texto"><span>NUESTRA GENTE</span>Lealtad en el aire: gracias por sintonizarnos cada día.</p>
+    </div>
+  </div>
+</section>
+
+<div class="contenedor" style="padding-top:0;">
+
+  <!-- BOTONES SOCIALES -->
+  <div class="sociales">
+    <a class="btn-social btn-facebook" href="https://www.facebook.com/profile.php?id=61591985707462" target="_blank" rel="noopener">
+      <span class="emoji">📘</span> Facebook
+    </a>
+    <a class="btn-social btn-noticias" href="https://algopas.blogspot.com/" target="_blank" rel="noopener">
+      <span class="emoji">📰</span> Noticias
+    </a>
+    <a class="btn-social btn-whatsapp" href="https://wa.me/5493644178678?text=Hola%20me%20comunico%20con%20Algo%20Pasa%20para%20publicitar%20mi..." target="_blank" rel="noopener">
+      <span class="emoji">💬</span> WhatsApp
+    </a>
+  </div>
+
+  <!-- NOTICIAS -->
+  <div class="tarjeta">
+    <div class="tarjeta-titulo">📰 Página Oficial de Noticias</div>
+    <p class="noticias-texto">Enterate de todo lo que pasa en tu ciudad. Noticias, actualidad e información de nuestra comunidad, actualizadas todos los días.</p>
+    <a class="link-noticias" href="https://algopas.blogspot.com/" target="_blank" rel="noopener">Ver noticias →</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p><strong>Algo Pasa</strong> · 101.7 MHz · La Lealtad en el Aire</p>
+    <p>Hecho con ❤️ para nuestra comunidad</p>
+  </footer>
+
+</div>
+
+<!-- BOTON FLOTANTE WHATSAPP -->
+<a class="flotante-whatsapp" href="https://wa.me/5493644178678?text=Hola%20me%20comunico%20con%20Algo%20Pasa%20para%20publicitar%20mi..." target="_blank" rel="noopener" aria-label="Contactar por WhatsApp">
+  💬
+</a>
+
+<script>
+  const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (window.gsap && window.ScrollTrigger && !prefiereMenosMovimiento) {
+    gsap.registerPlugin(ScrollTrigger);
+
+    const secciones = document.querySelectorAll('.parallax-seccion');
+
+    secciones.forEach((seccion) => {
+      const wrap = seccion.querySelector('.parallax-img-wrap');
+      const img = seccion.querySelector('img');
+
+      // La tarjeta de imagen empieza chica y con bordes redondeados,
+      // y se "expande" suavemente a pantalla completa mientras scrolleás.
+      gsap.fromTo(wrap,
+        { width: '80%', height: '70%', borderRadius: '28px' },
+        {
+          width: '100%',
+          height: '100%',
+          borderRadius: '0px',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: seccion,
+            start: 'top bottom',
+            end: 'center center',
+            scrub: 1
+          }
+        }
+      );
+
+      // La imagen interna se des-zoomea un poco mientras el contenedor crece
+      gsap.fromTo(img,
+        { scale: 1.25 },
+        {
+          scale: 1.0,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: seccion,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1
+          }
+        }
+      );
+
+      // Leve movimiento vertical de la imagen (parallax clásico)
+      gsap.to(img, {
+        yPercent: 12,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: seccion,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1
+        }
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
