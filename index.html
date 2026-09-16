@@ -223,19 +223,25 @@
   }
 
   /* ===== REPRODUCTOR DE AUDIO (solo audio, sin video de Twitch) ===== */
-  .twitch-oculto{
-    position:fixed;
-    top:-9999px;
-    left:-9999px;
-    width:300px;
-    height:169px;
-    pointer-events:none;
+  .twitch-visible{
+    width:100%;
+    max-width:280px;
+    margin:20px auto 4px;
+    border-radius:14px;
+    overflow:hidden;
+    aspect-ratio:16/9;
+    box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    background:#000;
   }
 
-  .twitch-oculto iframe{
+  .twitch-visible iframe{
     width:100%;
     height:100%;
     border:0;
+  }
+
+  .twitch-visible.vacio{
+    display:none;
   }
 
   .audio-player{
@@ -560,8 +566,9 @@
       </div>
     </div>
 
-    <!-- Acá vive el player de Twitch, oculto de la vista: solo se escucha -->
-    <div class="twitch-oculto">
+    <!-- Player de Twitch: chico y visible a propósito, por si el navegador lo
+         silencia automáticamente, la persona puede tocar el ícono de parlante -->
+    <div id="twitchVisibleWrap" class="twitch-visible vacio">
       <iframe
         id="twitchAudioFrame"
         title="Audio en vivo de Algo Pasa"
@@ -570,6 +577,7 @@
         scrolling="no">
       </iframe>
     </div>
+    <p class="player-hint" id="hintSonido" style="display:none;">Si no se escucha nada, tocá el ícono 🔈 dentro del recuadro de arriba (a veces el navegador lo silencia solo)</p>
 
     <p class="player-hint">¿No se escucha? Abrí en <a href="https://www.twitch.tv/algopasa" target="_blank" rel="noopener">Twitch</a></p>
   </div>
@@ -663,10 +671,14 @@
   const estadoPlayer = document.getElementById('estadoPlayer');
   const btnMute = document.getElementById('btnMute');
   const frame = document.getElementById('twitchAudioFrame');
+  const twitchVisibleWrap = document.getElementById('twitchVisibleWrap');
+  const hintSonido = document.getElementById('hintSonido');
 
   btnPlay.addEventListener('click', () => {
     if (!reproduciendo) {
       frame.src = urlDelPlayer(muteado);
+      twitchVisibleWrap.classList.remove('vacio');
+      hintSonido.style.display = 'block';
       reproduciendo = true;
       iconoPlay.textContent = '❚❚';
       btnPlay.classList.add('reproduciendo');
@@ -674,6 +686,8 @@
       estadoPlayer.textContent = 'Sonando ahora 🎶';
     } else {
       frame.src = ''; // corta el audio
+      twitchVisibleWrap.classList.add('vacio');
+      hintSonido.style.display = 'none';
       reproduciendo = false;
       iconoPlay.textContent = '▶';
       btnPlay.classList.remove('reproduciendo');
